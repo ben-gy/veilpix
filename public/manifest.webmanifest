@@ -1,0 +1,17 @@
+{
+  "name": "Veilpix — hide encrypted secrets inside images",
+  "short_name": "Veilpix",
+  "description": "Hide an encrypted message or file inside an ordinary image — in your browser, never uploaded.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070a14",
+  "theme_color": "#070a14",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

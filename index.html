@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#070a14" />
+
+    <title>veilpix — hide encrypted secrets inside images</title>
+    <meta
+      name="description"
+      content="Hide an AES-256 encrypted message or file inside an ordinary image. Everything runs in your browser — the picture, the secret, and the passphrase never leave your device."
+    />
+
+    <!-- Open Graph / social preview -->
+    <meta property="og:title" content="veilpix — hide encrypted secrets inside images" />
+    <meta
+      property="og:description"
+      content="Encrypt a message or file and weave it into the pixels of a photo. No uploads, no accounts, no server."
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Security: no third-party network access at all. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'none';"
+    />
+
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+              <defs>
+                <linearGradient id="vp-grad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#a78bfa" />
+                  <stop offset="100%" stop-color="#22d3ee" />
+                </linearGradient>
+              </defs>
+              <rect x="3" y="5" width="26" height="22" rx="3" fill="#0a0e1a" stroke="url(#vp-grad)" stroke-width="1.6" />
+              <circle cx="16" cy="15" r="4.4" fill="none" stroke="url(#vp-grad)" stroke-width="1.8" />
+              <circle cx="16" cy="15" r="1.6" fill="#0a0e1a" />
+              <rect x="15.1" y="15" width="1.8" height="5.2" rx="0.9" fill="url(#vp-grad)" />
+            </svg>
+            <span class="brand-name">
+              veil<span class="brand-name-accent">pix</span>
+            </span>
+          </a>
+          <div class="topbar-meta" id="topbar-meta">
+            <span><span class="meta-key">v</span> <span class="meta-val">1.0</span></span>
+            <span><span class="meta-key">cipher</span> <span class="meta-val">aes-gcm-256</span></span>
+            <span><span class="meta-key">carrier</span> <span class="meta-val">png lsb</span></span>
+            <span><span class="meta-key">backend</span> <span class="meta-val">none</span></span>
+          </div>
+        </div>
+        <nav class="topbar-nav">
+          <button type="button" class="nav-link" data-modal="tmpl-how-it-works">how it works</button>
+          <button type="button" class="nav-link" data-modal="tmpl-security">threat model</button>
+          <button type="button" class="nav-link" data-modal="tmpl-about">about</button>
+        </nav>
+      </header>
+
+      <div class="main-grid">
+        <main id="app">
+          <!-- main app region is populated by src/main.ts -->
+        </main>
+        <aside id="event-drawer">
+          <!-- event drawer is populated by src/eventlog.ts -->
+        </aside>
+      </div>
+
+      <footer class="statusbar">
+        <div>
+          <span class="status-pill">
+            <span class="dot-mini idle" id="sb-status-dot"></span>
+            <span class="label" id="sb-status-label">idle</span>
+          </span>
+          <span id="sb-mode" class="status-pill"></span>
+        </div>
+        <div>
+          <span id="sb-capacity"><span style="color:var(--fg-3)">capacity</span> —</span>
+          <span id="sb-payload"><span style="color:var(--fg-3)">payload</span> —</span>
+          <span class="attribution">Built by <a href="https://benrichardson.dev/" target="_blank" rel="noopener noreferrer">benrichardson.dev</a></span>
+        </div>
+      </footer>
+    </div>
+
+    <template id="tmpl-how-it-works">
+      <div class="modal-content">
+        <h2 class="modal-title">how it works</h2>
+        <ol class="steps">
+          <li>
+            <span class="step-num">01</span>
+            <div>
+              <h3>pick a cover image</h3>
+              <p>
+                Drop in any photo your browser can open. Veilpix decodes it to raw
+                pixels on a <code>&lt;canvas&gt;</code> — no upload, the bytes stay
+                in this tab.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <div>
+              <h3>encrypt the secret</h3>
+              <p>
+                Your message or file is encrypted with AES-GCM-256. The key is
+                derived from your passphrase with PBKDF2 (210,000 rounds of
+                SHA-256) using the Web Crypto API. The original filename is sealed
+                <em>inside</em> the ciphertext.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <div>
+              <h3>weave it into the pixels</h3>
+              <p>
+                A worker rewrites the least-significant bit of each red, green and
+                blue channel to carry the ciphertext. The change is ±1 per channel —
+                invisible to the eye, but it's all there.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">04</span>
+            <div>
+              <h3>download a lossless PNG</h3>
+              <p>
+                The result is re-encoded as PNG — lossless, so the hidden bits
+                survive. Share it like any other image. <strong>Don't convert it to
+                JPEG</strong>; recompression would scrub the payload.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">05</span>
+            <div>
+              <h3>reveal on the other side</h3>
+              <p>
+                The recipient drops the PNG into Veilpix's Reveal tab and enters the
+                same passphrase. The worker reads the LSBs, verifies the container,
+                and decrypts — recovering the original message or file.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </template>
+
+    <template id="tmpl-security">
+      <div class="modal-content">
+        <h2 class="modal-title">threat model</h2>
+        <div class="security-grid">
+          <div class="security-card good">
+            <h3>what's protected</h3>
+            <ul>
+              <li>Secret contents — AES-GCM-256 authenticated encryption</li>
+              <li>The secret's filename — sealed inside the ciphertext</li>
+              <li>The cover image — decoded and re-encoded in your browser, never uploaded</li>
+              <li>The passphrase — used only in this tab, never stored or sent</li>
+            </ul>
+          </div>
+          <div class="security-card bad">
+            <h3>what isn't</h3>
+            <ul>
+              <li>
+                <em>That</em> something is hidden — LSB steganography shifts pixel
+                statistics, so steganalysis can detect a payload's presence (not its
+                contents)
+              </li>
+              <li>The rough upper bound on payload size, implied by the image dimensions</li>
+              <li>
+                Durability through recompression — saving the PNG as JPEG, or running
+                it through a service that re-encodes images, destroys the hidden data
+              </li>
+            </ul>
+          </div>
+          <div class="security-card">
+            <h3>trust model</h3>
+            <ul>
+              <li>Sender and receiver must share the passphrase out-of-band</li>
+              <li>The passphrase <em>is</em> the secret — anyone who has it and the image can decrypt</li>
+              <li>Nothing here talks to a server: no analytics, no fonts, no calls</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="tmpl-about">
+      <div class="modal-content">
+        <h2 class="modal-title">about</h2>
+        <p class="about-lead">
+          <strong>Veilpix</strong> hides an encrypted message or file inside the
+          pixels of an ordinary image — a technique called <span class="glossary-link" data-term="steganography">steganography</span>.
+          Unlike a visibly-encrypted blob, the output just looks like a picture.
+        </p>
+        <p>
+          Everything happens locally in your browser using the Web Crypto and Canvas
+          APIs. The cover image, your secret and your passphrase never leave your
+          device. There is no server, no account and no telemetry.
+        </p>
+        <p>
+          Built by
+          <a href="https://benrichardson.dev/" target="_blank" rel="noopener noreferrer">benrichardson.dev</a>.
+          Source on
+          <a href="https://github.com/ben-gy/veilpix" target="_blank" rel="noopener noreferrer">GitHub</a>.
+          Released under the MIT license.
+        </p>
+      </div>
+    </template>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
