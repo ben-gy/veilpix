@@ -16,7 +16,9 @@ anything is hidden at all.
 It's for people who want to pass something sensitive without it *looking*
 sensitive — and who refuse to hand their photo, their secret, and their
 passphrase to some upload-it-here website. Everything in Veilpix happens locally
-in your browser. There is no server, no account, and no telemetry.
+in your browser. There is no server and no account. The only analytics is
+Cloudflare Web Analytics — anonymous, cookie-less page-view counts; no personal
+data, no cross-site tracking.
 
 The secret is first encrypted with **AES-GCM-256** (key derived from your
 passphrase via PBKDF2), then woven into the least-significant bits of the image's
@@ -96,7 +98,7 @@ LSBs. Capacity is therefore ~3 bits per opaque pixel.
 **Trust model**
 - Sender and receiver must share the passphrase out-of-band
 - The passphrase *is* the secret — anyone who has it and the image can decrypt
-- Nothing here talks to a server: no analytics, no third-party fonts, no calls
+- Your images never talk to a server: no uploads, no third-party fonts, no calls with your data — the only third-party request is the cookie-less Cloudflare Web Analytics page-view counter
 
 ## stack
 

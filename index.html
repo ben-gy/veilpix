@@ -188,7 +188,7 @@
             <ul>
               <li>Sender and receiver must share the passphrase out-of-band</li>
               <li>The passphrase <em>is</em> the secret — anyone who has it and the image can decrypt</li>
-              <li>Nothing here talks to a server: no analytics, no fonts, no calls</li>
+              <li>Your images never talk to a server: no uploads, no fonts, no calls with your data — the only third-party request is the cookie-less Cloudflare Web Analytics page-view counter</li>
             </ul>
           </div>
         </div>
@@ -206,7 +206,9 @@
         <p>
           Everything happens locally in your browser using the Web Crypto and Canvas
           APIs. The cover image, your secret and your passphrase never leave your
-          device. There is no server, no account and no telemetry.
+          device. There is no server and no account. The only analytics is
+          Cloudflare Web Analytics — anonymous, cookie-less page-view counts; no
+          personal data, no cross-site tracking.
         </p>
         <p>
           Built by
