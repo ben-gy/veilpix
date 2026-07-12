@@ -105,7 +105,7 @@ LSBs. Capacity is therefore ~3 bits per opaque pixel.
 - Vitest for unit tests (crypto, container framing, LSB I/O, end-to-end pipeline)
 - GitHub Pages for hosting, deployed via GitHub Actions
 
-No analytics, no cookies, no third-party fonts, no telemetry.
+No cookies, no fingerprinting, no third-party fonts. Anonymous, cookie-less page-view counts via Cloudflare Web Analytics — no personal data, no cross-site tracking.
 
 ## local development
 
