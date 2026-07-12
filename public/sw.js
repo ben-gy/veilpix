@@ -6,7 +6,7 @@
  * cross-origin requests, so nothing here phones home.
  */
 
-const CACHE = 'veilpix-v1';
+const CACHE = 'veilpix-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.add('/')));
