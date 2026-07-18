@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://veilpix-app.benrichardson.dev/sitemap.xml
