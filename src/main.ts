@@ -6,6 +6,11 @@
  * crypto.ts / stego.ts / pipeline.ts (run inside worker.ts).
  */
 
+// feedback:begin (managed by hub/scripts/feedback/backfill.mjs)
+import { mountFeedback } from './feedback';
+mountFeedback();
+// feedback:end
+
 import './styles/main.css';
 import { emit, mountEventDrawer } from './eventlog';
 import { initGlossary } from './glossary';
