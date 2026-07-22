@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Ben Richardson — https://benrichardson.dev
+// Additional terms under AGPL-3.0 section 7(b) apply; see ADDITIONAL-TERMS.md.
 /**
  * Veilpix UI helpers — DOM construction, icons, toast, and modal plumbing.
  * Kept free of business logic; main.ts wires these to the pipeline.
